@@ -102,17 +102,120 @@ a:hover{text-decoration:underline;}
 // 必ず正式タイムテーブルに書き換えてください
 const schedules = {
   "2026-02-21":[
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天 ROCK FEST 2026</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  height:100vh;
+  font-family:sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  background:url("bg.jpg") center/cover no-repeat;
+  position:relative;
+  overflow:hidden;
+}
+body::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(5px);
+}
+.container{
+  position:relative;
+  z-index:10;
+  max-width:900px;
+  width:90%;
+}
+h1{
+  font-size:2.8rem;
+  text-shadow:0 0 20px orange;
+  margin-bottom:10px;
+}
+.date{
+  font-size:1rem;
+  opacity:0.8;
+  margin-bottom:20px;
+}
+.countdown{
+  font-size:2rem;
+  text-shadow:0 0 20px cyan;
+}
+.now{
+  font-size:2rem;
+  text-shadow:0 0 20px red;
+}
+.next{
+  font-size:1.2rem;
+  margin-top:10px;
+}
+.bar{
+  height:12px;
+  background:#222;
+  margin-top:20px;
+  border-radius:10px;
+  overflow:hidden;
+}
+.progress{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,orange,red);
+  transition:width 1s linear;
+}
+.url{
+  margin-top:30px;
+  font-size:0.9rem;
+}
+a{color:#00ccff;text-decoration:none;}
+a:hover{text-decoration:underline;}
+.ended{
+  font-size:2rem;
+  color:#ff4444;
+  text-shadow:0 0 20px red;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>天 ROCK FEST 2026</h1>
+  <div class="date" id="date"></div>
+  <div id="content"></div>
+
+  <div class="url">
+    Official:
+    <a href="https://youtube.com/@tenrockfest" target="_blank">
+      https://youtube.com/@tenrockfest
+    </a>
+  </div>
+</div>
+
+<script>
+
+const FEST_START = new Date("2026-02-21T14:05:00");
+const FEST_PRE_DAY = new Date("2026-02-20T00:00:00");
+const FEST_END = new Date("2026-02-23T23:59:59");
+
+// ===== スケジュール（簡易例）=====
+const schedules = {
+  "2026-02-21":[
     {name:"OINO",time:"14:05"},
-    {name:"Albon",time:"18:00"},
     {name:"Silfira",time:"20:42"}
   ],
   "2026-02-22":[
-    {name:"Knotic",time:"14:05"},
     {name:"RiriMio",time:"19:22"},
     {name:"WaTa:94",time:"20:46"}
   ],
   "2026-02-23":[
-    {name:"The Sacred Crow",time:"15:34"},
     {name:"BACK LINE",time:"20:22"},
     {name:"hurahura",time:"20:54"}
   ]
@@ -123,11 +226,46 @@ function update(){
   const now = new Date();
   const todayKey = now.toISOString().split("T")[0];
 
-  document.getElementById("date").innerText = todayKey;
+  document.getElementById("date").innerText =
+    now.toLocaleString("ja-JP");
 
+  // 開催前（前日より前）
+  if(now < FEST_PRE_DAY){
+    document.getElementById("content").innerHTML =
+      `<div class="countdown">COMING SOON</div>`;
+    return;
+  }
+
+  // 前日〜開幕まで
+  if(now >= FEST_PRE_DAY && now < FEST_START){
+    const diff = FEST_START-now;
+    const d = Math.floor(diff/1000/60/60/24);
+    const h = Math.floor(diff/1000/60/60)%24;
+    const m = Math.floor(diff/1000/60)%60;
+    const s = Math.floor(diff/1000)%60;
+
+    document.getElementById("content").innerHTML =
+      `<div class="countdown">
+        開幕まで<br>
+        ${d}日 ${h}時間 ${m}分 ${s}秒
+      </div>`;
+    return;
+  }
+
+  // 終了後
+  if(now > FEST_END){
+    document.getElementById("content").innerHTML =
+      `<div class="ended">
+        天 ROCK FEST 2026<br>
+        THANK YOU!!
+      </div>`;
+    return;
+  }
+
+  // 開催中ロジック
   if(!schedules[todayKey]){
     document.getElementById("content").innerHTML =
-      `<div class="ended">本日の開催はありません</div>`;
+      `<div class="ended">本日の公演は終了しました</div>`;
     return;
   }
 
@@ -138,33 +276,6 @@ function update(){
     }
   });
 
-  const first = todaySchedule[0].datetime;
-  const last = todaySchedule[todaySchedule.length-1].datetime;
-
-  // 開始前
-  if(now < first){
-    const diff = first-now;
-    const h = Math.floor(diff/1000/60/60);
-    const m = Math.floor(diff/1000/60)%60;
-    const s = Math.floor(diff/1000)%60;
-    document.getElementById("content").innerHTML =
-      `<div class="countdown">
-        開幕まで ${h}時間 ${m}分 ${s}秒
-      </div>`;
-    return;
-  }
-
-  // 終了後
-  if(now > last){
-    document.getElementById("content").innerHTML =
-      `<div class="ended">
-        本日の公演は終了しました<br>
-        Thank you!!
-      </div>`;
-    return;
-  }
-
-  // 開催中
   let currentIndex = 0;
   for(let i=0;i<todaySchedule.length;i++){
     if(todaySchedule[i].datetime <= now){
