@@ -7,51 +7,126 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+
 body{
   font-family:sans-serif;
   background:#000;
   color:white;
   text-align:center;
 }
+
 header{
-  padding:20px;
-  font-size:2rem;
+  padding:30px 10px;
+  font-size:2.5rem;
   text-shadow:0 0 20px orange;
 }
-.stage-title{
-  margin-top:20px;
+
+#status{
   font-size:1.5rem;
+  margin-bottom:20px;
   text-shadow:0 0 15px cyan;
 }
-iframe{
-  margin-top:20px;
-  width:90%;
-  max-width:960px;
-  height:540px;
-  border:none;
-  box-shadow:0 0 30px red;
+
+.youtube-link{
+  margin-bottom:30px;
+  font-size:1rem;
 }
-footer{
-  margin-top:30px;
-  font-size:0.9rem;
-}
+
 a{color:#00ccff;}
+
+.stage{
+  margin:40px auto;
+  width:95%;
+  max-width:1100px;
+}
+
+.stage h2{
+  margin-bottom:15px;
+  font-size:1.4rem;
+  text-shadow:0 0 10px red;
+}
+
+.video-wrapper{
+  position:relative;
+  padding-bottom:56.25%;
+  height:0;
+  overflow:hidden;
+}
+
+.video-wrapper iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  border:none;
+  box-shadow:0 0 30px rgba(255,0,0,0.5);
+}
+
+footer{
+  margin:50px 0 30px;
+  font-size:0.9rem;
+  opacity:0.7;
+}
+
 </style>
 </head>
 <body>
 
 <header>🔥 天 ROCK FEST 2026 🔥</header>
-<div id="content"></div>
 
-<footer>
-Official:
+<div id="status"></div>
+
+<div class="youtube-link">
+Official YouTube:<br>
 <a href="https://youtube.com/@tenrockfest" target="_blank">
 https://youtube.com/@tenrockfest
 </a>
+</div>
+
+<!-- GREEN -->
+<div class="stage">
+  <h2>前夜祭 (1日目) GREEN TENT 14:00</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src="https://www.youtube.com/embed/-864gaIGWrk"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- BLUE -->
+<div class="stage">
+  <h2>前夜祭 (1日目) BLUE TENT 15:55</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src="https://www.youtube.com/embed/9iRqOg_Sm9w"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- RED -->
+<div class="stage">
+  <h2>前夜祭 (1日目) RED TENT 18:00</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src="https://www.youtube.com/embed/Ql_lVhX3fJQ"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<footer>
+© 天 ROCK FEST 2026
 </footer>
 
 <script>
 
+// ===== 次回開催年を自動判定 =====
 function getFestivalYear(){
   const now = new Date();
   let year = now.getFullYear();
@@ -59,45 +134,41 @@ function getFestivalYear(){
   return year;
 }
 
-const YEAR = getFestivalYear();
-
-// 前夜祭 2/21
-const schedule = [
-  {
-    title:"前夜祭 GREEN TENT",
-    start:new Date(`${YEAR}-02-21T14:00:00`),
-    end:new Date(`${YEAR}-02-21T15:50:00`),
-    url:"https://www.youtube.com/embed/-864gaIGWrk?autoplay=1"
-  },
-  {
-    title:"前夜祭 BLUE TENT",
-    start:new Date(`${YEAR}-02-21T15:55:00`),
-    end:new Date(`${YEAR}-02-21T17:55:00`),
-    url:"https://www.youtube.com/embed/9iRqOg_Sm9w?autoplay=1"
-  },
-  {
-    title:"前夜祭 RED TENT",
-    start:new Date(`${YEAR}-02-21T18:00:00`),
-    end:new Date(`${YEAR}-02-21T23:59:00`),
-    url:"https://www.youtube.com/embed/Ql_lVhX3fJQ?autoplay=1"
-  }
-];
+const FEST_YEAR = getFestivalYear();
+const FEST_START = new Date(FEST_YEAR+"-02-21T14:00:00");
+const FEST_PRE_DAY = new Date(FEST_YEAR+"-02-20T00:00:00");
+const FEST_END = new Date(FEST_YEAR+"-02-23T23:59:59");
 
 function update(){
+
   const now = new Date();
 
-  const live = schedule.find(s => now >= s.start && now <= s.end);
-
-  if(live){
-    document.getElementById("content").innerHTML = `
-      <div class="stage-title">${live.title} 配信中</div>
-      <iframe src="${live.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    `;
-  }else{
-    document.getElementById("content").innerHTML = `
-      <div class="stage-title">現在配信はありません</div>
-    `;
+  if(now < FEST_PRE_DAY){
+    document.getElementById("status").innerHTML = "COMING SOON";
+    return;
   }
+
+  if(now >= FEST_PRE_DAY && now < FEST_START){
+    const diff = FEST_START - now;
+
+    const d = Math.floor(diff/1000/60/60/24);
+    const h = Math.floor(diff/1000/60/60)%24;
+    const m = Math.floor(diff/1000/60)%60;
+    const s = Math.floor(diff/1000)%60;
+
+    document.getElementById("status").innerHTML =
+      `開幕まで ${d}日 ${h}時間 ${m}分 ${s}秒`;
+    return;
+  }
+
+  if(now > FEST_END){
+    document.getElementById("status").innerHTML =
+      `天 ROCK FEST ${FEST_YEAR} THANK YOU!!`;
+    return;
+  }
+
+  document.getElementById("status").innerHTML =
+    `🔥 天 ROCK FEST ${FEST_YEAR} 開催中 🔥`;
 }
 
 setInterval(update,1000);
