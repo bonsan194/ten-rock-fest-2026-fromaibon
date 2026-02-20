@@ -303,9 +303,29 @@ function update(){
 setInterval(update,1000);
 update();
 </script>
+<!-- BGM -->
+<audio id="bgm" autoplay loop>
+  <source src="bgm.mp3" type="audio/mpeg">
+</audio>
 
+<!-- ユーザー操作用（自動再生対策） -->
+<button id="bgmButton" 
+  style="position:fixed;bottom:20px;right:20px;z-index:999;padding:10px 15px;">
+  🔊 MUSIC ON
+</button>
+
+<script>
+const bgm = document.getElementById("bgm");
+const btn = document.getElementById("bgmButton");
+
+btn.addEventListener("click", () => {
+  bgm.play();
+  btn.style.display = "none";
+});
+</script>
 </body>
 </html>
+
 
 
 
