@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天 ROCK FEST 2026</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  height:100vh;
+  font-family:sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  background:url("bg.jpg") center/cover no-repeat;
+  position:relative;
+  overflow:hidden;
+}
+body::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(5px);
+}
+.container{
+  position:relative;
+  z-index:10;
+  max-width:900px;
+  width:90%;
+}
+h1{
+  font-size:2.8rem;
+  text-shadow:0 0 20px orange;
+  margin-bottom:10px;
+}
+.date{
+  font-size:1rem;
+  opacity:0.8;
+  margin-bottom:20px;
+}
+.now{
+  font-size:2rem;
+  margin-top:10px;
+  text-shadow:0 0 20px red;
+}
+.next{
+  font-size:1.2rem;
+  margin-top:10px;
+}
+.countdown{
+  font-size:2rem;
+  text-shadow:0 0 20px cyan;
+}
+.bar{
+  height:12px;
+  background:#222;
+  margin-top:20px;
+  border-radius:10px;
+  overflow:hidden;
+}
+.progress{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,orange,red);
+  transition:width 1s linear;
+}
+.url{
+  margin-top:30px;
+  font-size:0.9rem;
+}
+a{color:#00ccff;text-decoration:none;}
+a:hover{text-decoration:underline;}
+.ended{
+  font-size:2rem;
+  color:#ff4444;
+  text-shadow:0 0 20px red;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>天 ROCK FEST 2026</h1>
+  <div class="date" id="date"></div>
+  <div id="content"></div>
+
+  <div class="url">
+    Official:
+    <a href="https://youtube.com/@tenrockfest" target="_blank">
+      https://youtube.com/@tenrockfest
+    </a>
+  </div>
+</div>
+
+<script>
+
+// ===== スケジュール =====
+// 必ず正式タイムテーブルに書き換えてください
+const schedules = {
+  "2026-02-21":[
+    {name:"OINO",time:"14:05"},
+    {name:"Albon",time:"18:00"},
+    {name:"Silfira",time:"20:42"}
+  ],
+  "2026-02-22":[
+    {name:"Knotic",time:"14:05"},
+    {name:"RiriMio",time:"19:22"},
+    {name:"WaTa:94",time:"20:46"}
+  ],
+  "2026-02-23":[
+    {name:"The Sacred Crow",time:"15:34"},
+    {name:"BACK LINE",time:"20:22"},
+    {name:"hurahura",time:"20:54"}
+  ]
+};
+
+function update(){
+
+  const now = new Date();
+  const todayKey = now.toISOString().split("T")[0];
+
+  document.getElementById("date").innerText = todayKey;
+
+  if(!schedules[todayKey]){
+    document.getElementById("content").innerHTML =
+      `<div class="ended">本日の開催はありません</div>`;
+    return;
+  }
+
+  const todaySchedule = schedules[todayKey].map(s=>{
+    return {
+      name:s.name,
+      datetime:new Date(todayKey+"T"+s.time+":00")
+    }
+  });
+
+  const first = todaySchedule[0].datetime;
+  const last = todaySchedule[todaySchedule.length-1].datetime;
+
+  // 開始前
+  if(now < first){
+    const diff = first-now;
+    const h = Math.floor(diff/1000/60/60);
+    const m = Math.floor(diff/1000/60)%60;
+    const s = Math.floor(diff/1000)%60;
+    document.getElementById("content").innerHTML =
+      `<div class="countdown">
+        開幕まで ${h}時間 ${m}分 ${s}秒
+      </div>`;
+    return;
+  }
+
+  // 終了後
+  if(now > last){
+    document.getElementById("content").innerHTML =
+      `<div class="ended">
+        本日の公演は終了しました<br>
+        Thank you!!
+      </div>`;
+    return;
+  }
+
+  // 開催中
+  let currentIndex = 0;
+  for(let i=0;i<todaySchedule.length;i++){
+    if(todaySchedule[i].datetime <= now){
+      currentIndex=i;
+    }
+  }
+
+  const current = todaySchedule[currentIndex];
+  const next = todaySchedule[currentIndex+1];
+
+  let remainingText="";
+  let progressWidth=0;
+
+  if(next){
+    const total = next.datetime-current.datetime;
+    const elapsed = now-current.datetime;
+    const remaining = next.datetime-now;
+
+    const m = Math.floor(remaining/1000/60);
+    const s = Math.floor(remaining/1000)%60;
+    remainingText=`残り ${m}分 ${s}秒`;
+
+    progressWidth = (elapsed/total)*100;
+  }
+
+  document.getElementById("content").innerHTML = `
+    <div class="now">🎤 NOW PLAYING<br>${current.name}</div>
+    <div class="next">⏭ NEXT: ${next?next.name:"END"}</div>
+    <div class="next">${remainingText}</div>
+    <div class="bar">
+      <div class="progress" style="width:${progressWidth}%"></div>
+    </div>
+  `;
+}
+
+setInterval(update,1000);
+update();
+
+</script>
+
+</body>
+</html>
