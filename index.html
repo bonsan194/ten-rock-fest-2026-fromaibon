@@ -297,8 +297,91 @@ function update(){
       `天 ROCK FEST ${Y} は終了しました`;
     return;
   }
-  document.getElementById("status").innerHTML=
-      `天 ROCK FEST ${Y} 開催中`;
+  // ===== ステージ時間定義 =====
+const stages = {
+  "02-21": {
+    green: { start: "14:00", end: "15:54", url:"https://www.youtube.com/embed/-864gaIGWrk", name:"GREEN TENT" },
+    blue:  { start: "15:55", end: "17:59", url:"https://www.youtube.com/embed/9iRqOg_Sm9w", name:"BLUE TENT" },
+    red:   { start: "18:00", end: "23:59", url:"https://www.youtube.com/embed/Ql_lVhX3fJQ", name:"RED TENT" }
+  },
+  "02-22": {
+    green: { start: "14:00", end: "15:49", url:"", name:"GREEN TENT" },
+    blue:  { start: "15:50", end: "18:29", url:"", name:"BLUE TENT" },
+    red:   { start: "18:30", end: "23:59", url:"", name:"RED TENT" }
+  },
+  "02-23": {
+    green: { start: "14:00", end: "16:04", url:"", name:"GREEN TENT" },
+    blue:  { start: "16:05", end: "18:19", url:"", name:"BLUE TENT" },
+    red:   { start: "18:20", end: "23:59", url:"", name:"RED TENT" }
+  }
+};
+
+function getTodayKey(now){
+  return ("0"+(now.getMonth()+1)).slice(-2)+"-"+("0"+now.getDate()).slice(-2);
+}
+
+function timeToDate(baseDate,timeStr){
+  const [h,m]=timeStr.split(":");
+  return new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate(),h,m);
+}
+
+const todayKey = getTodayKey(now);
+const todayStages = stages[todayKey];
+
+if(todayStages){
+
+  let liveStage = null;
+
+  for(const key in todayStages){
+    const s = todayStages[key];
+    const start = timeToDate(now,s.start);
+    const end   = timeToDate(now,s.end);
+
+    if(now >= start && now <= end){
+      liveStage = s;
+    }
+  }
+
+  if(liveStage){
+    document.getElementById("status").innerHTML = `
+      <div style="font-size:1.8rem;">
+        天 ROCK FEST ${Y} 開催中
+      </div>
+
+      <div style="
+        display:inline-block;
+        margin-top:10px;
+        padding:5px 15px;
+        background:red;
+        color:white;
+        font-weight:bold;
+        border-radius:20px;
+        animation:blink 1s infinite;">
+        🔴 LIVE ${liveStage.name}
+      </div>
+
+      <div style="margin-top:15px;">
+        <a href="${liveStage.url}" target="_blank"
+          style="color:#00ccff;font-size:1.1rem;">
+          ▶ 配信を見る
+        </a>
+      </div>
+    `;
+  }else{
+    document.getElementById("status").innerHTML = `
+      <div style="font-size:1.6rem;">
+        本日の公演は終了しました
+      </div>
+      <div style="margin-top:15px;">
+        明日の出演予定はまもなく公開
+      </div>
+    `;
+  }
+
+}else{
+  document.getElementById("status").innerHTML =
+    `天 ROCK FEST ${Y} 開催中`;
+}
 }
 setInterval(update,1000);
 update();
@@ -325,6 +408,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
