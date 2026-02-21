@@ -381,7 +381,8 @@ const END=new Date(Y+"-02-23T23:59:59");
 function update(){
   const now=new Date();
   if(now<PRE){
-    document.getElementById("status").innerHTML="COMING SOON";
+    document.getElementById("statusText").innerHTML = "COMING SOON";
+document.getElementById("liveBadge").style.display = "none";
     return;
   }
   if(now>=PRE && now<START){
@@ -389,8 +390,10 @@ function update(){
     const h=Math.floor((START-now)/1000/60/60)%24;
     const m=Math.floor((START-now)/1000/60)%60;
     const s=Math.floor((START-now)/1000)%60;
-    document.getElementById("status").innerHTML=
-      `開幕まで ${d}日 ${h}時間 ${m}分 ${s}秒`;
+    document.getElementById("statusText").innerHTML =
+  `開幕まで ${d}日 ${h}時間 ${m}分 ${s}秒`;
+
+document.getElementById("liveBadge").style.display = "none";
     return;
   }
   if(now>END){
@@ -515,6 +518,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
