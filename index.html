@@ -374,10 +374,9 @@ function getFestivalYear(){
 }
 
 const Y=getFestivalYear();
-const START=new Date(Y+"-02-21T14:00:00");
-const PRE=new Date(Y+"-02-20T00:00:00");
-const END=new Date(Y+"-02-23T23:59:59");
-
+const START = new Date(Y, 1, 21, 14, 0, 0);
+const PRE   = new Date(Y, 1, 20, 0, 0, 0);
+const END   = new Date(Y, 1, 23, 23, 59, 59);
 function update(){
   const now = new Date();
 
@@ -555,6 +554,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
