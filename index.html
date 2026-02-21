@@ -365,6 +365,7 @@ https://youtube.com/@tenrockfest
 
 <footer>© 非公式 "天 ROCK FEST 2026"を応援するAIbon </footer>
 
+<script>
 liveStage.url}"
           frameborder="0"
           allow="autoplay; encrypted-media"
@@ -445,17 +446,17 @@ document.getElementById("liveStageName").textContent =
 document.getElementById("liveBadge").style.display =
   "inline-block";
 
-  // 🔴 LIVE iframe追加（自動再生）
-  document.getElementById("liveContainer").innerHTML = `
-    <div style="margin-top:20px;">
-      <iframe 
-        src="${liveStage.url}?autoplay=1"
-        width="100%" 
-        height="400"
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-      </iframe>
-    </div>
+document.getElementById("liveContainer").innerHTML = `
+  <div style="margin-top:20px;">
+    <iframe 
+      src="${liveStage.url}?autoplay=1&mute=1&playsinline=1"
+      width="100%" 
+      height="400"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  </div>
+`;
 <script>
 /* ===== 設定とユーティリティ ===== */
 function getFestivalYear(){
@@ -630,6 +631,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
