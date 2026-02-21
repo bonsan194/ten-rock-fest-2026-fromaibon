@@ -568,7 +568,7 @@ function update(){
       // URLが前回と違うときだけiframe更新（無駄な再生成を防ぐ）
       if (prevLiveUrl !== liveStage.url){
         // embed URLにautoplayパラメータを付与して埋め込み
-        const embedUrl = liveStage.url + "?autoplay=1";
+        const embedUrl = liveStage.url + "?autoplay=1&mute=1&playsinline=1&rel=0";
         liveContainer.innerHTML = `
           <div style="margin-top:20px;">
             <iframe
@@ -630,6 +630,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
