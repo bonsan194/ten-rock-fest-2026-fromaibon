@@ -366,98 +366,6 @@ https://youtube.com/@tenrockfest
 <footer>© 非公式 "天 ROCK FEST 2026"を応援するAIbon </footer>
 
 <script>
-liveStage.url}"
-          frameborder="0"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-        </iframe>
-      `;
-    }else{
-      document.getElementById("liveContainer").innerHTML = "";
-    }
-
-    return;
-  }
-
-  // ④ 終了
-  if(now > END){
-    document.getElementById("statusText").innerHTML =
-      `天 ROCK FEST ${Y} は終了しました`;
-
-    document.getElementById("liveBadge").style.display = "none";
-    document.getElementById("liveContainer").innerHTML = "";
-    return;
-  }
-}
-  // ===== ステージ時間定義 =====
-const stages = {
-  "02-21": {
-    green: { start: "14:00", end: "15:54", url:"https://www.youtube.com/embed/-864gaIGWrk", name:"GREEN TENT" },
-    blue:  { start: "15:55", end: "17:59", url:"https://www.youtube.com/embed/9iRqOg_Sm9w", name:"BLUE TENT" },
-    red:   { start: "18:00", end: "23:59", url:"https://www.youtube.com/embed/Ql_lVhX3fJQ", name:"RED TENT" }
-  },
-  "02-22": {
-    green: { start: "14:00", end: "15:49", url:"", name:"GREEN TENT" },
-    blue:  { start: "15:50", end: "18:29", url:"", name:"BLUE TENT" },
-    red:   { start: "18:30", end: "23:59", url:"", name:"RED TENT" }
-  },
-  "02-23": {
-    green: { start: "14:00", end: "16:04", url:"", name:"GREEN TENT" },
-    blue:  { start: "16:05", end: "18:19", url:"", name:"BLUE TENT" },
-    red:   { start: "18:20", end: "23:59", url:"", name:"RED TENT" }
-  }
-};
-
-function getTodayKey(now){
-  return ("0"+(now.getMonth()+1)).slice(-2)+"-"+("0"+now.getDate()).slice(-2);
-}
-
-function timeToDate(baseDate,timeStr){
-  const [h,m]=timeStr.split(":");
-  return new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate(),h,m);
-}
-
-const todayKey = getTodayKey(now);
-const todayStages = stages[todayKey];
-
-if(todayStages){
-
-  let liveStage = null;
-
-  for(const key in todayStages){
-    const s = todayStages[key];
-    const start = timeToDate(now,s.start);
-    const end   = timeToDate(now,s.end);
-
-    if(now >= start && now <= end){
-      liveStage = s;
-    }
-  }
-
-  if(liveStage){
-
-  // ステータス表示
-  document.getElementById("statusText").innerHTML =
-  `天 ROCK FEST ${Y} 開催中`;
-
-document.getElementById("liveStageName").textContent =
-  liveStage.name;
-
-document.getElementById("liveBadge").style.display =
-  "inline-block";
-
-document.getElementById("liveContainer").innerHTML = `
-  <div style="margin-top:20px;">
-    <iframe 
-      src="${liveStage.url}?autoplay=1&mute=1&playsinline=1"
-      width="100%" 
-      height="400"
-      allow="autoplay; encrypted-media"
-      allowfullscreen>
-    </iframe>
-  </div>
-`;
-<script>
 /* ===== 設定とユーティリティ ===== */
 function getFestivalYear(){
   const now = new Date();
@@ -631,6 +539,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
