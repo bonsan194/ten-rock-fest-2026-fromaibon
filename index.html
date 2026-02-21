@@ -379,31 +379,68 @@ const PRE=new Date(Y+"-02-20T00:00:00");
 const END=new Date(Y+"-02-23T23:59:59");
 
 function update(){
-  const now=new Date();
-  if(now<PRE){
+  const now = new Date();
+
+  // ① 開催前
+  if(now < PRE){
     document.getElementById("statusText").innerHTML = "COMING SOON";
-document.getElementById("liveBadge").style.display = "none";
+    document.getElementById("liveBadge").style.display = "none";
     return;
   }
-  if(now>=PRE && now<START){
+
+  // ② カウントダウン
+  if(now >= PRE && now < START){
     const d=Math.floor((START-now)/1000/60/60/24);
     const h=Math.floor((START-now)/1000/60/60)%24;
     const m=Math.floor((START-now)/1000/60)%60;
     const s=Math.floor((START-now)/1000)%60;
-    document.getElementById("statusText").innerHTML =
-  `開幕まで ${d}日 ${h}時間 ${m}分 ${s}秒`;
 
-document.getElementById("liveBadge").style.display = "none";
+    document.getElementById("statusText").innerHTML =
+      `開幕まで ${d}日 ${h}時間 ${m}分 ${s}秒`;
+
+    document.getElementById("liveBadge").style.display = "none";
     return;
   }
-  if(now>END){
-  document.getElementById("statusText").innerHTML =
-    `天 ROCK FEST ${Y} は終了しました`;
 
-  document.getElementById("liveBadge").style.display = "none";
-  document.getElementById("liveContainer").innerHTML = "";
-  return;
+  // 🔥 ③ 開催中（これが今無い）
+  if(now >= START && now <= END){
+
+    document.getElementById("statusText").innerHTML =
+      `天 ROCK FEST ${Y} 開催中`;
+
+    document.getElementById("liveBadge").style.display = "inline-block";
+
+    // ▼ ここでライブ判定
+    const liveStage = getCurrentLiveStage(now);
+
+    if(liveStage){
+      document.getElementById("liveContainer").innerHTML = `
+        <iframe
+          width="100%"
+          height="450"
+          src="${liveStage.url}"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+        </iframe>
+      `;
+    }else{
+      document.getElementById("liveContainer").innerHTML = "";
+    }
+
+    return;
   }
+
+  // ④ 終了
+  if(now > END){
+    document.getElementById("statusText").innerHTML =
+      `天 ROCK FEST ${Y} は終了しました`;
+
+    document.getElementById("liveBadge").style.display = "none";
+    document.getElementById("liveContainer").innerHTML = "";
+    return;
+  }
+}
   // ===== ステージ時間定義 =====
 const stages = {
   "02-21": {
@@ -518,6 +555,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
