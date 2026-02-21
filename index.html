@@ -100,6 +100,8 @@ footer{
 
 <header>天 ROCK FEST 2026 ファンサイト(非公式)</header>
 <div id="status"></div>
+<!-- LIVE 用 iframe -->
+<div id="liveContainer"></div>
 
 <div class="youtube-link">
 Official YouTube:<br>
@@ -147,10 +149,75 @@ https://youtube.com/@tenrockfest
 
 <!-- ▼ ここに2日目3日目を追加できます ▼ -->
 <!--
+<!-- GREEN -->
 <div class="stage">
-  <h2>2日目</h2>
+  <h2>Day1 GREEN TENT 14:00</h2>
   <div class="video-wrapper">
-    <iframe src="YouTube埋め込みURL"></iframe>
+    <iframe 
+      src="https://www.youtube.com/embed/SsY-4_okquA"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- BLUE -->
+<div class="stage">
+  <h2>Day1 BLUE TENT 15:50</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src="https://www.youtube.com/embed/opHTFLynKu0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- RED -->
+<div class="stage">
+  <h2>Day1 RED TENT 18:30</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src=""
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- GREEN -->
+<div class="stage">
+  <h2>Day2 GREEN TENT 14:00</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src=""
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- BLUE -->
+<div class="stage">
+  <h2>Day2 BLUE TENT 16:05</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src=""
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<!-- RED -->
+<div class="stage">
+  <h2>Day1 RED TENT 18:20</h2>
+  <div class="video-wrapper">
+    <iframe 
+      src=""
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
   </div>
 </div>
 -->
@@ -343,46 +410,59 @@ if(todayStages){
   }
 
   if(liveStage){
-    document.getElementById("status").innerHTML = `
-      <div style="font-size:1.8rem;">
-        天 ROCK FEST ${Y} 開催中
-      </div>
 
-      <div style="
-        display:inline-block;
-        margin-top:10px;
-        padding:5px 15px;
-        background:red;
-        color:white;
-        font-weight:bold;
-        border-radius:20px;
-        animation:blink 1s infinite;">
-        🔴 LIVE ${liveStage.name}
-      </div>
+  // ステータス表示
+  document.getElementById("status").innerHTML = `
+    <div style="font-size:1.8rem;">
+      天 ROCK FEST ${Y} 開催中
+    </div>
 
-      <div style="margin-top:15px;">
-        <a href="${liveStage.url}" target="_blank"
-          style="color:#00ccff;font-size:1.1rem;">
-          ▶ 配信を見る
-        </a>
-      </div>
-    `;
-  }else{
-    document.getElementById("status").innerHTML = `
-      <div style="font-size:1.6rem;">
-        本日の公演は終了しました
-      </div>
-      <div style="margin-top:15px;">
-        明日の出演予定はまもなく公開
-      </div>
-    `;
-  }
+    <div style="
+      display:inline-block;
+      margin-top:10px;
+      padding:5px 15px;
+      background:red;
+      color:white;
+      font-weight:bold;
+      border-radius:20px;
+      animation:blink 1s infinite;">
+      🔴 LIVE ${liveStage.name}
+    </div>
+  `;
+
+  // 🔴 LIVE iframe追加（自動再生）
+  document.getElementById("liveContainer").innerHTML = `
+    <div style="margin-top:20px;">
+      <iframe 
+        src="${liveStage.url}?autoplay=1"
+        width="100%" 
+        height="400"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>
+    </div>
+  `;
 
 }else{
-  document.getElementById("status").innerHTML =
-    `天 ROCK FEST ${Y} 開催中`;
+
+  // 終了表示
+  document.getElementById("status").innerHTML = `
+    <div style="font-size:1.6rem;">
+      本日の公演は終了しました
+    </div>
+    <div style="margin-top:15px;">
+      明日の出演予定はまもなく公開
+    </div>
+  `;
+
+  // iframe消す
+  document.getElementById("liveContainer").innerHTML = "";
+  }
+    `;
+  }
 }
 }
+
 setInterval(update,1000);
 update();
 </script>
@@ -408,6 +488,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
