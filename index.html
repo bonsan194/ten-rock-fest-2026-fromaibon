@@ -512,18 +512,67 @@ function update(){
 
   // ④ 終了（ENDより後）
   if (now > END){
-    statusTextEl.innerHTML = `天 ROCK FEST ${Y} は終了しました`;
-    liveBadgeEl.style.display = "none";
-    if (prevLiveUrl !== null){
-      liveContainer.innerHTML = "";
-      prevLiveUrl = null;
-    }
-    return;
+
+  statusTextEl.innerHTML = `天 ROCK FEST ${Y} は終了しました`;
+
+  liveBadgeEl.style.display = "none";
+
+  // プレイリストをシャッフル自動再生
+  if (prevLiveUrl !== "playlist"){
+    liveContainer.innerHTML = `
+      <div style="margin-top:20px;">
+        <iframe
+          width="100%"
+          height="450"
+          src="https://www.youtube.com/embed/videoseries?list=PLbrV6gyANWB248XDuiFmEb4idJ2KuaYrb&autoplay=1&mute=1&shuffle=1&rel=0"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+    prevLiveUrl = "playlist";
   }
+
+  return;
+}
 }
 
 /* 最初に実行して、以降は1秒ごとに更新 */
 update();
+// ===== 強制終了モード =====
+const FORCE_END_MODE = true;
+function update(){
+
+  if (FORCE_END_MODE){
+    showAfterFestival();
+    return;
+  }
+
+  const now = new Date();
+
+function showAfterFestival(){
+
+  statusTextEl.innerHTML = "THANK YOU FOR ROCKING 2026";
+  liveBadgeEl.style.display = "none";
+
+  if (prevLiveUrl !== "playlist"){
+    liveContainer.innerHTML = `
+      <div style="margin-top:20px;">
+        <iframe
+          width="100%"
+          height="450"
+          src="https://www.youtube.com/embed/videoseries?list=PLbrV6gyANWB248XDuiFmEb4idJ2KuaYrb&autoplay=1&mute=1&shuffle=1&rel=0"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+    prevLiveUrl = "playlist";
+  }
+}
+  
 setInterval(update, 1000);
 </script>
 <!-- BGM -->
@@ -548,6 +597,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
