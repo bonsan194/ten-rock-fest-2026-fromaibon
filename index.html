@@ -374,22 +374,29 @@ https://youtube.com/@tenrockfest
 
 <footer>© 非公式 "天 ROCK FEST 2026"を応援するAIbon </footer>
 
+  
 <script>
-/* ===== 設定とユーティリティ ===== */
+/* ===== 終了モードでプレイリスト自動再生する安全版スクリプト ===== */
+
+/* いつでも終了扱いにする（true にすると常時プレイリスト表示） */
+const FORCE_END_MODE = true;
+
+/* 年判定は残す（将来戻すときのため） */
 function getFestivalYear(){
   const now = new Date();
   let y = now.getFullYear();
   if (now > new Date(y + "-02-23T23:59:59")) y++;
   return y;
 }
-
 const Y = getFestivalYear();
-// JSTで確実に日付を作る（monthは0始まり：2月=1）
-const START = new Date(Y, 1, 21, 14, 0, 0);
-const PRE   = new Date(Y, 1, 20, 0, 0, 0);
-const END   = new Date(Y, 1, 23, 23, 59, 59);
+const START = new Date(Y,1,21,14,0,0);
+const PRE   = new Date(Y,1,20,0,0,0);
+const END   = new Date(Y,1,23,23,59,59);
 
-/* ステージ定義（embed形式のURLを入れておく） */
+/* プレイリストID（あなたの公開プレイリスト） */
+const PLAYLIST_ID = "PLbrV6gyANWB248XDuiFmEb4idJ2KuaYrb";
+
+/* 既存のステージ定義は残しておく（不要ならあとで削除可） */
 const stages = {
   "02-21": {
     green: { start: "14:00", end: "15:54", url:"https://www.youtube.com/embed/-864gaIGWrk", name:"GREEN TENT" },
@@ -408,36 +415,51 @@ const stages = {
   }
 };
 
+let prevLiveUrl = null;
+
 function getTodayKey(date){
   return ("0"+(date.getMonth()+1)).slice(-2) + "-" + ("0"+date.getDate()).slice(-2);
 }
-
 function timeToDate(baseDate, timeStr){
   const [h, m] = timeStr.split(":");
   return new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), parseInt(h,10), parseInt(m,10));
 }
-
-/* 前回のライブURLを保持して必要時のみiframeを差し替える（無駄な再描画防止） */
-let prevLiveUrl = null;
-
 function getCurrentLiveStage(now){
   const key = getTodayKey(now);
   const todayStages = stages[key];
   if (!todayStages) return null;
-
   for (const k of ["green","blue","red"]){
     const s = todayStages[k];
     if (!s) continue;
     const start = timeToDate(now, s.start);
     const end   = timeToDate(now, s.end);
-    if (now >= start && now <= end){
-      return s;
-    }
+    if (now >= start && now <= end) return s;
   }
   return null;
 }
 
-/* ===== update 関数（UIは部分的にのみ更新） ===== */
+/* show playlist (終了後画面) */
+function showAfterFestival(){
+  const statusTextEl = document.getElementById("statusText");
+  const liveBadgeEl = document.getElementById("liveBadge");
+  const liveContainer = document.getElementById("liveContainer");
+
+  statusTextEl.innerHTML = `天 ROCK FEST ${Y} は終了しました`;
+  liveBadgeEl.style.display = "none";
+
+  if (prevLiveUrl !== "playlist"){
+    const embed = `https://www.youtube.com/embed/videoseries?list=${PLAYLIST_ID}&autoplay=1&mute=1&shuffle=1&rel=0`;
+    liveContainer.innerHTML = `
+      <div style="margin-top:20px;">
+        <iframe width="100%" height="450" src="${embed}" frameborder="0"
+          allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    `;
+    prevLiveUrl = "playlist";
+  }
+}
+
+/* update() — 必要なら日付判定や開催中ロジックを残す（今回は FORCE_END_MODE で終了画面優先） */
 function update(){
   const now = new Date();
   const statusTextEl = document.getElementById("statusText");
@@ -445,19 +467,18 @@ function update(){
   const liveStageNameEl = document.getElementById("liveStageName");
   const liveContainer = document.getElementById("liveContainer");
 
-  // ① 開催前（PREより前）
-  if (now < PRE){
-    statusTextEl.innerHTML = "COMING SOON";
-    liveBadgeEl.style.display = "none";
-    // iframeは消す
-    if (prevLiveUrl !== null){
-      liveContainer.innerHTML = "";
-      prevLiveUrl = null;
-    }
+  if (FORCE_END_MODE){
+    showAfterFestival();
     return;
   }
 
-  // ② 前日〜開始直前（カウントダウン）
+  // ----- 元のロジック（必要なら残す） -----
+  if (now < PRE){
+    statusTextEl.innerHTML = "COMING SOON";
+    liveBadgeEl.style.display = "none";
+    if (prevLiveUrl !== null){ liveContainer.innerHTML = ""; prevLiveUrl = null; }
+    return;
+  }
   if (now >= PRE && now < START){
     const diff = START - now;
     const d = Math.floor(diff / 1000 / 60 / 60 / 24);
@@ -466,86 +487,37 @@ function update(){
     const s = Math.floor(diff / 1000) % 60;
     statusTextEl.innerHTML = `開幕まで ${d}日 ${h}時間 ${m}分 ${s}秒`;
     liveBadgeEl.style.display = "none";
-    if (prevLiveUrl !== null){
-      liveContainer.innerHTML = "";
-      prevLiveUrl = null;
-    }
+    if (prevLiveUrl !== null){ liveContainer.innerHTML = ""; prevLiveUrl = null; }
     return;
   }
-
-  // ③ 開催中（START 〜 END）
   if (now >= START && now <= END){
     statusTextEl.innerHTML = `天 ROCK FEST ${Y} 開催中`;
     liveBadgeEl.style.display = "inline-block";
-
     const liveStage = getCurrentLiveStage(now);
-
     if (liveStage && liveStage.url){
       liveStageNameEl.textContent = liveStage.name;
-
-      // URLが前回と違うときだけiframe更新（無駄な再生成を防ぐ）
       if (prevLiveUrl !== liveStage.url){
-        // embed URLにautoplayパラメータを付与して埋め込み
         const embedUrl = liveStage.url + "?autoplay=1&mute=1&playsinline=1&rel=0";
-        liveContainer.innerHTML = `
-          <div style="margin-top:20px;">
-            <iframe
-              width="100%"
-              height="400"
-              src="${embedUrl}"
-              frameborder="0"
-              allow="autoplay; encrypted-media"
-              allowfullscreen>
-            </iframe>
-          </div>
-        `;
+        liveContainer.innerHTML = `<div style="margin-top:20px;"><iframe width="100%" height="400" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
         prevLiveUrl = liveStage.url;
       }
     } else {
-      // 本日の該当ステージ配信がない時間帯
       liveStageNameEl.textContent = "";
       liveContainer.innerHTML = "";
       prevLiveUrl = null;
     }
     return;
   }
-
-  // ④ 終了（ENDより後）
+  // ENDより後
   if (now > END){
-
-  statusTextEl.innerHTML = `天 ROCK FEST ${Y} は終了しました`;
-
-  liveBadgeEl.style.display = "none";
-
-  // プレイリストをシャッフル自動再生
-  if (prevLiveUrl !== "playlist"){
-    liveContainer.innerHTML = `
-      <div style="margin-top:20px;">
-        <iframe
-          width="100%"
-          height="450"
-          src="https://www.youtube.com/embed/videoseries?list=PLbrV6gyANWB248XDuiFmEb4idJ2KuaYrb&autoplay=1&mute=1&shuffle=1&rel=0"
-          frameborder="0"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-        </iframe>
-      </div>
-    `;
-    prevLiveUrl = "playlist";
+    showAfterFestival();
+    return;
   }
-
-  return;
-}
 }
 
-/* 最初に実行して、以降は1秒ごとに更新 */
-showAfterFestival();
-- /* 最初に実行して、以降は1秒ごとに更新 */
-- showAfterFestival();
-+ /* 最初に実行して、以降は1秒ごとに更新 */
-+ update();
-+ setInterval(update, 1000);
-  
+/* 初回実行 + 1秒ごとの更新 */
+update();
+setInterval(update, 1000);
 </script>
 <!-- BGM -->
 <audio id="bgm" autoplay loop>
@@ -569,6 +541,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
