@@ -439,56 +439,57 @@ function getCurrentLiveStage(now){
 }
 
 /* show playlist (終了後画面) */
+let playlistInitialized = false;
+
 function showAfterFestival(){
+  if (playlistInitialized) return;  // ← これが重要
+
   const statusTextEl = document.getElementById("statusText");
   const liveBadgeEl = document.getElementById("liveBadge");
   const liveContainer = document.getElementById("liveContainer");
 
-  statusTextEl.innerHTML = `天 ROCK FEST ${Y} は終了しました`;
+  statusTextEl.innerHTML = `天 ROCK FEST 2026 終幕？でも終わらない!！`;
   liveBadgeEl.style.display = "none";
 
-  // 🔽 プレイリスト内の動画IDをすべて入れる
   const videos = [
-  "z5kJ7Xm3Ybs",
-  "883NTR7EGT4",
-  "oiSxeu-SsjM",
-  "JlGuBShROxQ",
-  "Noo7mP6pss4",
-  "DHwtp8uPczA",
-  "6R4btSWUM5I",
-  "MtYJ5Oj6Ccc",
-  "87lGFeqziSY",
-  "OCavHr9k3lI",
-  "ZiCrO1PykUA",
-  "0u7OMwIMrx4",
-  "2bk_zOwFA84",
-  "VuflFsJt_cA",
-  "bALQZxlngvI",
-  "9X3cwGfEwqo",
-  "XAcJ9gIlEow",
-  "V3gs3E78C_0",
-  "74lvWHuFimE",
-  "OkBSL_iD1ds"
-];
-  // ランダム選択
+    "z5kJ7Xm3Ybs",
+    "883NTR7EGT4",
+    "oiSxeu-SsjM",
+    "JlGuBShROxQ",
+    "Noo7mP6pss4",
+    "DHwtp8uPczA",
+    "6R4btSWUM5I",
+    "MtYJ5Oj6Ccc",
+    "87lGFeqziSY",
+    "OCavHr9k3lI",
+    "ZiCrO1PykUA",
+    "0u7OMwIMrx4",
+    "2bk_zOwFA84",
+    "VuflFsJt_cA",
+    "bALQZxlngvI",
+    "9X3cwGfEwqo",
+    "XAcJ9gIlEow",
+    "V3gs3E78C_0",
+    "74lvWHuFimE",
+    "OkBSL_iD1ds"
+  ];
+
   const randomVideo = videos[Math.floor(Math.random() * videos.length)];
 
-  if (prevLiveUrl !== randomVideo){
-    const embed = `https://www.youtube.com/embed/${randomVideo}?autoplay=1&mute=1&rel=0&playsinline=1`;
+  const embed = `https://www.youtube.com/embed/${randomVideo}?autoplay=1&mute=1&rel=0&playsinline=1`;
 
-    liveContainer.innerHTML = `
-      <div style="margin-top:20px;">
-        <iframe width="100%" height="450"
-          src="${embed}"
-          frameborder="0"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-        </iframe>
-      </div>
-    `;
+  liveContainer.innerHTML = `
+    <div style="margin-top:20px;">
+      <iframe width="100%" height="450"
+        src="${embed}"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>
+    </div>
+  `;
 
-    prevLiveUrl = randomVideo;
-  }
+  playlistInitialized = true;  // ← 初期化完了フラグ
 }
 
 /* update() — 必要なら日付判定や開催中ロジックを残す（今回は FORCE_END_MODE で終了画面優先） */
@@ -573,6 +574,7 @@ btn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
 
 
